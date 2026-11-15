@@ -2,7 +2,7 @@ from services.base_http_client import BaseHTTPClient
 from dotenv import load_dotenv 
 import os 
 
-load_dotenv 
+load_dotenv()
 
 class TipService:
     def __init__(self):
