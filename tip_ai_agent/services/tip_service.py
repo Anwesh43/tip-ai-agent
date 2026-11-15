@@ -1,6 +1,7 @@
 from services.base_http_client import BaseHTTPClient 
 from dotenv import load_dotenv 
 import os 
+from typing import Dict 
 
 load_dotenv()
 
@@ -18,22 +19,25 @@ class TipService:
             "message": str(e)
         }
 
+    def serveProjectResponse(self, response):
+        keys = ["year", "name", "slug", "category", "city"]
+        results = []
+        if "results" in response:
+            for res in response["results"]:
+                obj = {}
+                for key in keys:
+                    obj[key] = res[key]
+                results.append(obj)
+        return results 
+
+
     def searchProject(self, query : str):
         try:
             qpParams = {
                 "q": query
             }
             response = self.client.getCall("search", qpParams = qpParams)
-            keys = ["year", "name", "slug", "category", "city"]
-            
-            results = []
-            if "results" in response:
-                for res in response["results"]:
-                    obj = {}
-                    for key in keys:
-                        obj[key] = res[key]
-                    results.append(obj)
-            return results 
+            return self.serveProjectResponse(response=response)
         except Exception as e:
             return self._handleError(e)
 
@@ -48,7 +52,7 @@ class TipService:
     def getSimilarProjects(self, projectSlug : str):
         try:
             response = self.client.getCall(f"similar/{projectSlug}")
-            return response 
+            return self.serveProjectResponse(response=response) 
         except Exception as e:
             return self._handleError(e)
     
